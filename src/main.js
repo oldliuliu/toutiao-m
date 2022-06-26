@@ -7,6 +7,7 @@ import 'vant/lib/index.css'
 // 加载全局css样式
 import '@/styles/index.less'
 import 'amfe-flexible'
+import '@/styles/icon.less'
 Vue.use(Vant)
 
 Vue.config.productionTip = false
