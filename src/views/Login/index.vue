@@ -1,11 +1,12 @@
 <template>
   <div>
-    <van-nav-bar title="登录">
+    <van-nav-bar title="登录" @click-left="$router.back()">
       <template #left>
         <van-icon name="cross" />
       </template>
     </van-nav-bar>
     <van-form @submit="onSubmit" ref="form">
+      <!-- 手机号 -->
       <van-field
         v-model.trim="mobile"
         name="mobile"
@@ -15,8 +16,10 @@
           { pattern: /^(?:(?:\+|00)86)?1[3-9]\d{9}$/, message: '格式不符合' },
         ]"
       >
-        <i class="toutiao toutiao-shouji" slot="left-icon"></i>
+        <!-- <i class="toutiao toutiao-shouji" slot="left-icon"></i> -->
+        <MyIcon name="shouji" slot="left-icon"></MyIcon>
       </van-field>
+      <!-- 验证码 -->
       <van-field
         v-model.trim="code"
         type="password"
@@ -41,6 +44,7 @@
           >
         </template>
       </van-field>
+      <!-- 提交 -->
       <div style="margin: 16px">
         <van-button
           round
@@ -61,7 +65,7 @@ export default {
   created () { },
   data () {
     return {
-      mobile: '13911111111', // 手机号
+      mobile: '13711111111', // 手机号
       code: '246810', // 短信验证码
       time: 60 * 1000, // 倒计时
       isCountDownShow: false
@@ -74,6 +78,7 @@ export default {
         // console.log(res)
         // token 有效期两小时有两种 一种是让用户从新登录 一种是直接重新计算
         this.$store.commit('setUser', res.data.data)
+        this.$router.push({ path: 'my' })
       } catch (err) {
         console.log(err)
       }

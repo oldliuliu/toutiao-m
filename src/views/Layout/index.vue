@@ -1,6 +1,6 @@
 <template>
   <div>
-    <router-view />
+    <router-view class="main"/>
 
     <van-tabbar route>
       <van-tabbar-item replace to="/home" icon="home-o">
@@ -51,5 +51,9 @@ export default {
 }
 .van-tabbar-item{
   font-size: 20px;
+}
+.main{
+  padding-bottom: 98px;
+  background-color: #f7f9f5;
 }
 </style>
