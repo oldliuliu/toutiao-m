@@ -46,7 +46,11 @@
 </template>
 
 <script>
-import { getAllArticleList } from '@/api/home'
+// 用户没有登录做本地存储
+// 用户登录过，做ajax持久化
+import { getAllArticleList, saveChannels } from '@/api/home'
+import { setItem } from '@/utils/storage'
+const CHANNELS = 'CHANNELS'
 export default {
   name: 'ChannelPanel',
   props: {
@@ -81,6 +85,7 @@ export default {
       this.recommendChannels.splice(res, 1)
     },
     onClick (index) {
+      if (index === 0) return
       if (this.isCloseShow) {
         // 删除
         const obj = this.channels[index]
@@ -96,7 +101,30 @@ export default {
     }
   },
   computed: {},
-  watch: {},
+  watch: {
+    channels: {
+      async handler (newVal) {
+        if (this.$store.state.user && this.$store.state.user.token) { // 登陆过
+          console.log(123)
+          const arr = []
+          newVal.forEach((item, index) => {
+            arr.push({ id: item.id, seq: index })
+          })
+          console.log(arr)
+          // 先把频道数据处理一下
+          try {
+            const res = await saveChannels(arr)
+            console.log(res)
+          } catch (err) {
+            console.log(err)
+          }
+        } else { // 没有登录
+          setItem(CHANNELS, newVal)
+        }
+      },
+      deep: true// 深度监听
+    }
+  },
   filters: {},
   components: {}
 }

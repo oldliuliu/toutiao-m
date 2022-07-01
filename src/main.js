@@ -10,6 +10,14 @@ import '@/styles/index.less'
 import 'amfe-flexible'
 // import '@/styles/icon.less'
 import MyIcon from '@/components/MyIcon.vue'
+
+// Object.keys一次性把filters/index.js中所有的按需要导出全部导出来
+// 作为obj属性
+import * as obj from '@/filters'
+Object.keys(obj).forEach(key => {
+  Vue.filter(key, obj[key])
+})
+
 Vue.use(Vant)
 Vue.component('MyIcon', MyIcon)
 Vue.config.productionTip = false

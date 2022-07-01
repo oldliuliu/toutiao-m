@@ -42,6 +42,8 @@
 import ArticleList from '@/components/ArticleList.vue'
 import ChannellPonle from './components/ChannellPonle.vue'
 import { getMyChannels } from '@/api/home'
+import { getItem } from '@/utils/storage'
+const CHANNELS = 'CHANNELS'
 export default {
   name: 'home',
   created () {
@@ -56,17 +58,21 @@ export default {
   },
   methods: {
     async getMyChannels () {
-      try {
-        const res = await getMyChannels()
-        console.log(res)
-        this.channels = res.data.data.channels
-      } catch (err) {
-        console.log(err)
+      const channels = getItem(CHANNELS)
+      if (!(this.$store.state.user && this.$store.user.token) && this.channels) {
+        this.channels = channels
+      } else {
+        try {
+          const res = await getMyChannels()
+          console.log(res)
+          this.channels = res.data.data.channels
+        } catch (err) {
+          console.log(err)
+        }
       }
     }
   },
   computed: {},
-  watch: {},
   filters: {},
   components: {
     ArticleList,
@@ -118,7 +124,7 @@ export default {
   top: 92px;
   border-bottom: 1px solid #edeff3;
 }
-/deep/ .van-cell-group {
+/deep/ .van-tabs__content {
   height: calc(100vh-274px);
   overflow: auto;
 }

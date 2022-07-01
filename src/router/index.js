@@ -6,6 +6,7 @@ const Question = () => import('@/views/Question')
 const Vidio = () => import('@/views/Vidio')
 const Home = () => import('@/views/Home')
 const Login = () => import('@/views/Login')
+const Search = () => import('@/views/Search')
 Vue.use(VueRouter)
 
 // 路由表
@@ -28,7 +29,8 @@ const routes = [
       }
     ]
   },
-  { path: '/login', component: Login }
+  { path: '/login', component: Login },
+  { path: '/search', component: Search }
 ]
 
 const router = new VueRouter({
