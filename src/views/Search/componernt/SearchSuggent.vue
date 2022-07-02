@@ -1,5 +1,17 @@
 <template>
-  <div>搜索建议</div>
+  <div>
+    <van-cell
+      v-for="(item, index) in list"
+      :key="index"
+      :title="item"
+      icon="search"
+      @click="$emit('search',item)"
+    >
+      <template #title>
+        <span v-html="highlight(item)"></span>
+      </template>
+    </van-cell>
+  </div>
 </template>
 
 <script>
@@ -7,6 +19,7 @@
 import { getSuggestList } from '@/api/search'
 let timer = null
 export default {
+  name: 'SearchSuggent',
   props: {
     searchText: {
       type: String,
@@ -19,7 +32,14 @@ export default {
       list: []
     }
   },
-  methods: {},
+  methods: {
+    // 因为这块要渲染的不是普通的字符串，而是html片段，所以必须要用v- html v- html是属性绑定，所以不能用过滤器
+    // 所以只能在methods中写
+    highlight (str) {
+      const reg = new RegExp(this.searchText, 'g')
+      return str.replace(reg, `<span style='color:red'>${this.searchText}</span>`)
+    }
+  },
   computed: {},
   watch: {
     searchText: {
