@@ -2,7 +2,8 @@
   <div>
     <van-nav-bar title="标题" fixed>
       <template #title>
-        <van-button icon="search" type="info" class="search-btn"
+        <!-- to="/search"同级路由跳转 -->
+        <van-button icon="search" type="info" class="search-btn" to="/search"
           >搜索</van-button
         >
       </template>
