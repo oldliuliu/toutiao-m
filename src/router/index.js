@@ -7,6 +7,7 @@ const Vidio = () => import('@/views/Vidio')
 const Home = () => import('@/views/Home')
 const Login = () => import('@/views/Login')
 const Search = () => import('@/views/Search')
+const Article = () => import('@/views/Article')
 Vue.use(VueRouter)
 
 // 路由表
@@ -30,9 +31,10 @@ const routes = [
     ]
   },
   { path: '/login', component: Login },
-  { path: '/search', component: Search }
+  { path: '/search', component: Search },
+  { path: '/article/:article_id', component: Article, name: 'article', props: true }
 ]
-
+// props: true可以使组件和路由解偶
 const router = new VueRouter({
   routes
 })
