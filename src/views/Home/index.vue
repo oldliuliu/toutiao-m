@@ -60,7 +60,7 @@ export default {
   methods: {
     async getMyChannels () {
       const channels = getItem(CHANNELS)
-      if (!(this.$store.state.user && this.$store.user.token) && this.channels) {
+      if (!(this.$store.state.user && this.$store.state.user.token) && this.channels) {
         this.channels = channels
       } else {
         try {

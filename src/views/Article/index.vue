@@ -1,7 +1,12 @@
 <template>
   <div class="article-container">
     <!-- 导航栏 -->
-    <van-nav-bar class="page-nav-bar" left-arrow title="黑马头条"></van-nav-bar>
+    <van-nav-bar
+      class="page-nav-bar"
+      left-arrow
+      title="黑马头条"
+      @click-left="$router.back()"
+    ></van-nav-bar>
     <!-- /导航栏 -->
 
     <div class="main-wrap">
@@ -13,9 +18,9 @@
 
       <template v-else>
         <!-- 加载完成-文章详情 -->
-        <div class="article-detail" v-if="!!article.art_id">
+        <div class="article-detail markdown-body" v-if="!!article.art_id">
           <!-- 文章标题 -->
-          <h1 class="article-title">这是文章标题</h1>
+          <h1 class="article-title">{{ article.title }}</h1>
           <!-- /文章标题 -->
 
           <!-- 用户信息 -->
@@ -25,11 +30,13 @@
               slot="icon"
               round
               fit="cover"
-              src="https://img.yzcdn.cn/vant/cat.jpeg"
+              :src="article.aut_photo"
             />
-            <div slot="title" class="user-name">黑马头条号</div>
-            <div slot="label" class="publish-date">14小时前</div>
-            <van-button
+            <div slot="title" class="user-name">{{ article.aut_name }}</div>
+            <div slot="label" class="publish-date">
+              {{ article.pubdate | dateformat }}
+            </div>
+            <!-- <van-button
               class="follow-btn"
               type="info"
               color="#3296fa"
@@ -37,7 +44,15 @@
               size="small"
               icon="plus"
               >关注</van-button
-            >
+            > -->
+            <!-- <FllowUser
+              :is_followed="article.is_followed"
+              @input="article.is_followed = $event"
+            ></FllowUser> -->
+            <FollowUser
+              v-model="article.is_followed"
+              :target="article.aut_id"
+            ></FollowUser>
             <!-- <van-button
             class="follow-btn"
             round
@@ -47,8 +62,16 @@
           <!-- /用户信息 -->
 
           <!-- 文章内容 -->
-          <div class="article-content">这是文章内容</div>
+          <div class="article-content" v-html="article.content">
+            这是文章内容
+          </div>
           <van-divider>正文结束</van-divider>
+          <ArticleComment
+            :source="article.art_id"
+            type="a"
+            @set-count="count = $event"
+            :commentList="commentList"
+          ></ArticleComment>
         </div>
         <!-- /加载完成-文章详情 -->
 
@@ -71,23 +94,57 @@
 
     <!-- 底部区域 -->
     <div class="article-bottom" v-if="!isLoading && !!article.art_id">
-      <van-button class="comment-btn" type="default" round size="small"
+      <van-button
+        class="comment-btn"
+        type="default"
+        round
+        size="small"
+        @click="addCommentShow = true"
         >写评论</van-button
       >
-      <van-icon name="comment-o" badge="123" color="#777" />
-      <van-icon color="#777" name="star-o" />
+      <van-icon name="comment-o" :badge="count" color="#777" />
+      <!-- <van-icon color="#777" name="star-o" /> -->
+      <CollectArticle
+        :is_collected.sync="article.is_collected"
+      ></CollectArticle>
       <van-icon color="#777" name="good-job-o" />
-      <van-icon name="share" color="#777777"></van-icon>
+      <van-icon
+        name="share"
+        color="#777777"
+        @click="showShare = true"
+      ></van-icon>
     </div>
     <!-- /底部区域 -->
+    <div>
+      <van-share-sheet
+        v-model="showShare"
+        title="立即分享给好友"
+        :options="options"
+      />
+    </div>
+    <van-popup v-model="addCommentShow" position="bottom">
+      <!-- 每次打开组件重新创建，mounte重新执行 -->
+      <AddComment
+        v-if="addCommentShow"
+        :target="article_id"
+        @add-comment="
+          commentList.unshift($event);
+          addCommentShow = false;
+        "
+      ></AddComment>
+    </van-popup>
   </div>
 </template>
 
 <script>
+import AddComment from './components/AddComment.vue'
+import ArticleComment from './components/ArticleComment.vue'
+import { ImagePreview } from 'vant'
+import 'github-markdown-css'
 import { getArticle } from '@/api/article'
+
 export default {
   name: 'ArticleIndex',
-  components: {},
   props: {
     article_id: {
       type: [Number, String],
@@ -99,7 +156,18 @@ export default {
       isLoading: true, // 页面打开显示加载中
       // 初始化变量如果是数字null 或 ‘’ 素组【】 对象{}
       article: {},
-      is404Error: false
+      is404Error: false,
+      showShare: false,
+      options: [
+        { name: '微信', icon: 'wechat' },
+        { name: '微博', icon: 'weibo' },
+        { name: '复制链接', icon: 'link' },
+        { name: '分享海报', icon: 'poster' },
+        { name: '二维码', icon: 'qrcode' }
+      ],
+      count: null,
+      addCommentShow: false,
+      commentList: []
     }
   },
   computed: {},
@@ -116,9 +184,33 @@ export default {
       }
     }
     this.isLoading = false
+    // 数据vue画出来
+    // 数据更新之后视图不能立即更新
+    this.$nextTick(() => {
+      // 获取正文图中所有的图片
+      const arr = document.querySelectorAll('.article-content img')
+      if (arr.leng === 0) return
+      const arr1 = []// 放图片src的值
+      arr.forEach((img, index) => {
+        console.log(img.src)
+        arr1.push(img.src)
+        img.onclick = function () {
+          ImagePreview({
+            images: arr1,
+            startPosition: index,
+            maxZoom: 3,
+            showIndicators: true
+          })
+        }
+      })
+    })
   },
   mounted () { },
-  methods: {}
+  methods: {},
+  components: {
+    ArticleComment,
+    AddComment
+  }
 }
 </script>
 

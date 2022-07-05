@@ -14,12 +14,14 @@ import MyIcon from '@/components/MyIcon.vue'
 // Object.keys一次性把filters/index.js中所有的按需要导出全部导出来
 // 作为obj属性
 import * as obj from '@/filters'
+import FollowUser from '@/components/FollowUser.vue'
+import '@/components'
 Object.keys(obj).forEach(key => {
   Vue.filter(key, obj[key])
 })
-
 Vue.use(Vant)
 Vue.component('MyIcon', MyIcon)
+Vue.component(FollowUser.name, FollowUser)
 Vue.config.productionTip = false
 
 new Vue({
