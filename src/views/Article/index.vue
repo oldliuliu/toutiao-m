@@ -71,6 +71,10 @@
             type="a"
             @set-count="count = $event"
             :commentList="commentList"
+            @replay-show="
+              comment = $event;
+              isReplayShow = true;
+            "
           ></ArticleComment>
         </div>
         <!-- /加载完成-文章详情 -->
@@ -133,10 +137,18 @@
         "
       ></AddComment>
     </van-popup>
+    <van-popup position="bottom" v-model="isReplayShow" style="height: 100%">
+      <ReplayComment
+        :comment="comment"
+        @close="isReplayShow = false"
+        v-if="isReplayShow"
+      ></ReplayComment>
+    </van-popup>
   </div>
 </template>
 
 <script>
+import ReplayComment from './components/ReplayComment.vue'
 import AddComment from './components/AddComment.vue'
 import ArticleComment from './components/ArticleComment.vue'
 import { ImagePreview } from 'vant'
@@ -167,7 +179,9 @@ export default {
       ],
       count: null,
       addCommentShow: false,
-      commentList: []
+      commentList: [],
+      isReplayShow: false,
+      comment: {}
     }
   },
   computed: {},
@@ -209,7 +223,8 @@ export default {
   methods: {},
   components: {
     ArticleComment,
-    AddComment
+    AddComment,
+    ReplayComment
   }
 }
 </script>
